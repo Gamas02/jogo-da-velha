@@ -11,10 +11,22 @@ function Square({valor, onSquareClick}){
 
 export default function Tabuleiro(){
   const [squares, setSquares] = useState(Array(9).fill(null));
+  const [xIsNext, setXIsNext] = useState(true);
 
   function handleCklick(i){
     const nextSqueres = squares.slice();
-    nextSqueres[i] = 'X';
+    if(nextSqueres[i]){
+      return;
+    }
+    if (xIsNext){
+      nextSqueres[i] = 'X';
+      setXIsNext(false)
+    }
+    else{
+      nextSqueres[i] = 'O';
+      setXIsNext(true)
+    }
+    setXIsNext(!xIsNext);
     setSquares(nextSqueres);
   }
 
