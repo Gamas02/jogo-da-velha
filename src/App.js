@@ -20,9 +20,13 @@ function Tabuleiro({ xIsNext, squares, onPlay }) {
   }
 
   const vencedor = calculaVencedor(squares);
+  const empate = calculaEmpate(squares);
   let status;
+
   if (vencedor) {
     status = 'Vencedor: ' + vencedor;
+  } else if (empate) {
+    status = 'Empate!';
   } else {
     status = 'Próximo jogador: ' + (xIsNext ? 'X' : 'O');
   }
@@ -50,21 +54,18 @@ function Tabuleiro({ xIsNext, squares, onPlay }) {
 }
 
 export default function Game() {
-  // Inicia com um tabuleiro vazio
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
   const xIsNext = currentMove % 2 === 0;
 
   const currentSquares = history[currentMove];
 
-  // Função que trata as jogadas
   function handlePlay(nextSquares) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
   }
 
-  // Função para voltar a um movimento específico
   function jumpTo(nextMove) {
     setCurrentMove(nextMove);
   }
@@ -72,7 +73,6 @@ export default function Game() {
   return (
     <div>
       <Tabuleiro xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
-      {/* Adicionando um botão para voltar ao início */}
       <button onClick={() => jumpTo(0)}>Voltar ao início</button>
     </div>
   );
@@ -88,8 +88,13 @@ function calculaVencedor(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return squares[a]; // Retorna 'X' ou 'O' se houver um vencedor
     }
   }
-  return null;
+  return null; // Se não houver vencedor
+}
+
+function calculaEmpate(squares) {
+  // Verifica se o tabuleiro está cheio e não há vencedor (velha)
+  return squares.every(square => square !== null) && !calculaVencedor(squares);
 }
